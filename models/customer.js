@@ -9,11 +9,11 @@ const Reservation = require("./reservation");
 
 class Customer {
   constructor({ id, firstName, lastName, phone, notes }) {
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this.id = id;  //primary key
+    this.firstName = firstName;  //not null
+    this.lastName = lastName;  //not null
     this.phone = phone;
-    this.notes = notes;
+    this.notes = notes;  // default " ", not null
   }
 
   /** find all customers. */
@@ -62,7 +62,11 @@ class Customer {
     return await Reservation.getReservationsForCustomer(this.id);
   }
 
-  /** save this customer. */
+  /** If an id is passed in, then it takes in the incoming data, pulls up
+   * the customer instance in the database, patches the data and returns nothing (change this).
+   * If no id is passed in, this adds a new customer row to the database. Returns
+   * the new customer's id.
+   */
 
   async save() {
     if (this.id === undefined) {
@@ -90,6 +94,19 @@ class Customer {
       );
     }
   }
+  /* end save() */
+
+  /** Takes the firstName and the lastName of the customer instance that
+   * it is called on and returns a single string containing the customer's
+   * full name.
+   */
+
+  fullName() {
+
+  return `${this.firstName} ${this.lastName}`;
+
+  }
+
 }
 
 module.exports = Customer;
