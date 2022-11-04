@@ -24,9 +24,10 @@ router.get("/", async function (req, res, next) {
 
 // Search results: show list of customers from search
 router.get("/search", async function (req,res,next){
-  const fullName
+  let searchVal = req.query.search;
+
+  const customers = await Customer.customerSearch(searchVal);
   
-  const customers = await 
   return res.render("customer_list.html", { customers });
 });
 
