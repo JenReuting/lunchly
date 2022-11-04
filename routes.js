@@ -10,12 +10,29 @@ const Reservation = require("./models/reservation");
 
 const router = new express.Router();
 
+
+//**************************All customers ****************** */
+
 /** Homepage: show list of customers. */
 
 router.get("/", async function (req, res, next) {
   const customers = await Customer.all();
   return res.render("customer_list.html", { customers });
 });
+
+//**************************Customer search***************** */
+
+// Search results: show list of customers from search
+router.get("/search", async function (req,res,next){
+  const fullName
+  
+  const customers = await 
+  return res.render("customer_list.html", { customers });
+});
+
+
+
+//***************************Individual customers*********** */
 
 /** Form to add a new customer. */
 
@@ -70,6 +87,11 @@ router.post("/:id/edit/", async function (req, res, next) {
   return res.redirect(`/${customer.id}/`);
 });
 
+
+
+
+//***************************Reservations******************* */
+
 /** Handle adding a new reservation. */
 
 router.post("/:id/add-reservation/", async function (req, res, next) {
@@ -77,6 +99,8 @@ router.post("/:id/add-reservation/", async function (req, res, next) {
     throw new BadRequestError();
   }
   const customerId = req.params.id;
+
+  //need to be specific to the hour and minute
   const startAt = new Date(req.body.startAt);
   const numGuests = req.body.numGuests;
   const notes = req.body.notes;
