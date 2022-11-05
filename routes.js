@@ -20,14 +20,23 @@ router.get("/", async function (req, res, next) {
   return res.render("customer_list.html", { customers });
 });
 
+//*******************************TOP TEN******************** */
+
+/**Display top 10 customers, ordered descending by number of reservations  */
+
+router.get("/top-ten", async function (req, res, next) {
+  const customers = await Customer.topTen();
+  return res.render("customer_list.html", { customers });
+})
+
 //**************************Customer search***************** */
 
 // Search results: show list of customers from search
-router.get("/search", async function (req,res,next){
+router.get("/search", async function (req, res, next) {
   let searchVal = req.query.search;
 
   const customers = await Customer.customerSearch(searchVal);
-  
+
   return res.render("customer_list.html", { customers });
 });
 

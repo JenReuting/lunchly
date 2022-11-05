@@ -28,7 +28,7 @@ class Customer {
            FROM customers
            ORDER BY last_name, first_name`
     );
-    // console.log('all---------->', results.rows)
+
     return results.rows.map((c) => new Customer(c));
   }
 
@@ -101,33 +101,57 @@ class Customer {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  /** Customer Search Function */
+  /** Customer Search Function: accepts a search term, returns most closely
+   * matched name(s) as Customer instances.
+   */
 
   static async customerSearch(searchVal) {
     //parse search val
-
-    const firstName = searchVal.split(' ')[0];
-    const lastName = searchVal.split(' ')[1] || firstName;
+    let params = searchVal.split(' ');
+    const fName = params[0];
+    const lName = params[1] || fName;
 
     const searchResults = await db.query(
       `
-      SELECT c_first.id,
-        c_first.first_name as "firstName",
-        c_last.last_name as "lastName",
-        c_first.phone,
-        c_first.notes
-      FROM customers AS c_first
-      INNER JOIN customers AS c_last
-        ON c_first.id = c_last.id
-
-      WHERE c_first.first_name ILIKE $1
-        OR c_last.last_name ILIKE $2
+      SELECT id,
+        first_name as "firstName",
+        last_name as "lastName",
+        phone,
+        notes
+        
+        FROM customers
+        WHERE first_name || ' ' || last_name
+        ILIKE $1
       `,
-      [`%${firstName}%`, `%${lastName}}%`]
+      [`%${searchVal}%`]
     );
-    console.log(searchResults.rows, '<---------Search Results rows')
-    return searchResults.rows.map((c) => new Customer(c));
 
+    return searchResults.rows.map((c) => new Customer(c));
+  }
+
+  /** Searches for all customers with reservations, returns top 10 ordered by 
+   * number of reservations (from most to least).
+   */
+
+  static async topTen() {
+    const results = await db.query(
+      `
+      SELECT  c.id,
+        c.first_name AS "firstName",
+        c.last_name AS "lastName",
+        c.phone,
+        c.notes,
+        count(*)
+        FROM customers AS c
+        JOIN reservations AS r
+            ON c.id = r.customer_id
+        GROUP BY c.id
+        ORDER BY COUNT(*) DESC
+        LIMIT 10
+      `
+    );
+
+    return results.rows.map((c) => new Customer(c));
   }
 }
 
